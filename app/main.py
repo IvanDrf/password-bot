@@ -5,11 +5,10 @@ from handlers.handlers import Handler
 import asyncio
 
 
-Handler.Register_Handlers()
-
-
 async def main() -> None:
     cfg: Config = Config()
+
+    Handler.Register_Handlers()
 
     bot: Bot = Bot(token=cfg.token)
 
