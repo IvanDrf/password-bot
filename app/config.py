@@ -10,4 +10,8 @@ class Config:
         if getenv('TOKEN') is None:
             raise ValueError('cant get bot token in env')
 
+        if getenv('DB_NAME') is None:
+            raise ValueError('cant get database name')
+
         self.token: str = cast(str, getenv('TOKEN'))
+        self.db_name: str = cast(str, getenv('DB_NAME'))
