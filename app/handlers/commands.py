@@ -81,6 +81,7 @@ Commands:
             await self.repo.Associate_Password(user_ID, password, association)
 
             await message.answer(f'Successfully associated your password with {association}')
+            await state.clear()
 
         except ValueError as e:
             await message.answer(f'Invalid input, error: {e}')
@@ -95,7 +96,8 @@ Commands:
             associations: list[tuple[str, str]] = await self.repo.Find_Password_Associations(user_id)
             answer: str = ''
             for i in range(len(associations)):
-                answer += associations[i][0] + ' ' + associations[i][1] + '\n'
+                answer += str(i + 1) + ') ' + \
+                    associations[i][0] + ' | ' + associations[i][1] + '\n'
 
             await message.answer(answer)
         except:
