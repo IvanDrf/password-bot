@@ -21,23 +21,31 @@ class BotCommands:
         if message.from_user is None:
             await message.answer(f'Hello, this is Password Generator Bot')
         else:
+            if not (message.from_user.username is None):
+                try:
+                    await self.repo.Add_User(message.from_user.username)
+                except:
+                    pass
+
             await message.answer(f'Hello {message.from_user.first_name}, this is Password Generator Bot')
 
     async def Help_Handler(self, message: Message) -> None:
         answer: str = '''
-    Commands:
-    /start - start bot
-    /help - display the list of available commands
-    /generate - start generating a new password
-    '''
+Commands:
+/start - start bot
+/help - display the list of available commands
+/generate - start generating a new password
+/associate - associate word with your password
+/my - print your associations
+'''
 
         await message.answer(answer)
 
-    async def Generate_Handler(self, message: Message, state: FSMContext) -> None:
+    async def Generate_Password(self, message: Message, state: FSMContext) -> None:
         await message.answer('Enter password length:')
         await state.set_state(LengthStates.waiting_length)
 
-    async def Input_Length(self, message: Message, state: FSMContext) -> None:
+    async def Input_Password_Length(self, message: Message, state: FSMContext) -> None:
         try:
             if message.text is None:
                 raise ValueError('message is empty')
@@ -54,9 +62,43 @@ class BotCommands:
             await message.answer(f'Invalid input, error: {e}')
 
     async def Associate_Password(self, message: Message, state: FSMContext) -> None:
-        await message.answer('Enter a theme to associate a password with it, for example: github')
+        await message.answer('Enter a theme to associate and password with it, for example: github secret_password')
         await state.set_state(MatchStates.waiting_match)
 
     async def Input_Password_Association(self, message: Message, state: FSMContext) -> None:
-        # TODO: Write func
-        pass
+        try:
+            if message.text is None:
+                raise ValueError('message is empty')
+
+            association, password = message.text.split()
+            if association == '' or password == '':
+                raise ValueError('format should be name password')
+
+            if message.from_user is None or message.from_user.username is None:
+                raise ValueError('cant find your username')
+
+            user_ID: int = await self.repo.Find_User_By_Username(message.from_user.username)
+            await self.repo.Associate_Password(user_ID, password, association)
+
+            await message.answer(f'Successfully associated your password with {association}')
+            await state.clear()
+
+        except ValueError as e:
+            await message.answer(f'Invalid input, error: {e}')
+
+    async def Print_User_Associations(self, message: Message) -> None:
+        if message.from_user is None or message.from_user.username is None:
+            await message.answer('cant find your username')
+            return
+
+        try:
+            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+            associations: list[tuple[str, str]] = await self.repo.Find_Password_Associations(user_id)
+            answer: str = ''
+            for i in range(len(associations)):
+                answer += str(i + 1) + ') ' + \
+                    associations[i][0] + ' | ' + associations[i][1] + '\n'
+
+            await message.answer(answer)
+        except:
+            await message.answer('cant find your associations, are you sure, that you have it?')
