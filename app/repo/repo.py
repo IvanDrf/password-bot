@@ -5,6 +5,8 @@ from app.config import Config
 from app.repo.query.creator.creator import TableCreator
 from app.repo.query.user.user import UserAdder, UserFinder
 from app.repo.query.password.password import PasswordAssociater
+from app.repo.query.common.common import Associator
+
 from app.repo.errors import UserException
 
 
@@ -47,9 +49,21 @@ class Repo:
 
         raise UserException(f'cant find user with that username: {username}')
 
+    async def Find_Password_Associations(self, user_id: int) -> list[tuple[str, str]]:
+        async with (aiosqlite.connect(self.__db_name)) as db:
+            res = await db.execute_fetchall(Associator.Find_User_Passwords(), (user_id,))
+            if res is None:
+                raise UserException('cant find passwords for this user')
+
+            passwords: list[tuple[str, str]] = []
+            for row in res:
+                passwords.append((row[0], row[1]))
+
+            return passwords
+
     async def Associate_Password(self, user_ID: int, password: str, association: str) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
-            db.execute(PasswordAssociater.Associate_Password(),
-                       (password, association, user_ID))
+            await db.execute(PasswordAssociater.Associate_Password(),
+                             (password, association, user_ID))
 
             await db.commit()
