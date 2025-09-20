@@ -34,11 +34,11 @@ class Handler:
 
         self.__Register_Messages()
 
-    async def Start_Handler(self, message: Message) -> None:
-        await self.commands.Start_Handler(message)
+    async def Start_Handler(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Start_Handler(message, state)
 
-    async def Help_Handler(self, message: Message) -> None:
-        await self.commands.Help_Handler(message)
+    async def Help_Handler(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Help_Handler(message, state)
 
     async def Start_Password_Generation(self, message: Message, state: FSMContext) -> None:
         await self.commands.Start_Password_Generation(message, state)
@@ -52,8 +52,8 @@ class Handler:
     async def Associate_Password(self, message: Message, state: FSMContext) -> None:
         await self.commands.Associate_Password(message, state)
 
-    async def Print_User_Associations(self, message: Message) -> None:
-        await self.commands.Print_User_Associations(message)
+    async def Print_User_Associations(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Print_User_Associations(message, state)
 
     async def Start_Association_Changing(self, message: Message, state: FSMContext) -> None:
         await self.commands.Start_Association_Changing(message, state)
@@ -61,8 +61,8 @@ class Handler:
     async def Change_Association(self, message: Message, state: FSMContext) -> None:
         await self.commands.Change_Association(message, state)
 
-    async def Message_Handler(self, message: Message) -> None:
-        await Message_Handler(message)
+    async def Message_Handler(self, message: Message, state: FSMContext) -> None:
+        await Message_Handler(message, state)
 
     def __Register_Start(self) -> None:
         self.dp.message.register(self.Start_Handler, CommandStart())

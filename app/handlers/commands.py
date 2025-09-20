@@ -1,5 +1,6 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+from typing import Final
 
 from app.password.generator import Generator
 from app.state.state import LengthStates, AssociationStates
@@ -9,6 +10,16 @@ from app.repo.errors import UserException
 
 
 class BotCommands:
+    help_command: Final = '''
+Commands:
+/start - start bot
+/help - display the list of available commands
+/generate - start generating a new password
+/associate - associate word with your password
+/change - change password to your association
+/my - print your associations
+'''
+
     def __init__(self, repo: Repo) -> None:
         self.repo: Repo = repo
 
@@ -18,7 +29,9 @@ class BotCommands:
 
         return cls(repo)
 
-    async def Start_Handler(self, message: Message) -> None:
+    async def Start_Handler(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         if message.from_user is None:
             await message.answer(f'Hello, this is Password Generator Bot')
         else:
@@ -30,18 +43,10 @@ class BotCommands:
 
             await message.answer(f'Hello {message.from_user.first_name}, this is Password Generator Bot')
 
-    async def Help_Handler(self, message: Message) -> None:
-        answer: str = '''
-Commands:
-/start - start bot
-/help - display the list of available commands
-/generate - start generating a new password
-/associate - associate word with your password
-/change - change password to your association
-/my - print your associations
-'''
+    async def Help_Handler(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
 
-        await message.answer(answer)
+        await message.answer(BotCommands.help_command)
 
     async def Start_Password_Generation(self, message: Message, state: FSMContext) -> None:
         await message.answer('Enter password length:')
@@ -95,7 +100,9 @@ Commands:
         except Exception as e:
             await message.answer(f'You already have this association')
 
-    async def Print_User_Associations(self, message: Message) -> None:
+    async def Print_User_Associations(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         if message.from_user is None or message.from_user.username is None:
             await message.answer('Cant find your username')
             return
