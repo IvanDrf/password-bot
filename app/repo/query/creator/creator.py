@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS {Tables.users}(
     __passwords_table: Final = f'''
 CREATE TABLE IF NOT EXISTS {Tables.passwords}(
     password TEXT NOT NULL,
-    association TEXT NOT NULL,
+    association TEXT NOT NULL UNIQUE,
     user_id INTEGER,
 
     FOREIGN KEY (user_id) REFERENCES {Tables.users}(user_id)

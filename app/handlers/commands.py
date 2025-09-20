@@ -2,9 +2,10 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from app.password.generator import Generator
-from app.state.state import LengthStates, MatchStates
+from app.state.state import LengthStates, AssociationStates
 from app.repo.repo import Repo
 from app.config import Config
+from app.repo.errors import UserException
 
 
 class BotCommands:
@@ -36,16 +37,17 @@ Commands:
 /help - display the list of available commands
 /generate - start generating a new password
 /associate - associate word with your password
+/change - change password to your association
 /my - print your associations
 '''
 
         await message.answer(answer)
 
-    async def Generate_Password(self, message: Message, state: FSMContext) -> None:
+    async def Start_Password_Generation(self, message: Message, state: FSMContext) -> None:
         await message.answer('Enter password length:')
         await state.set_state(LengthStates.waiting_length)
 
-    async def Input_Password_Length(self, message: Message, state: FSMContext) -> None:
+    async def Generate_Password(self, message: Message, state: FSMContext) -> None:
         try:
             if message.text is None:
                 raise ValueError('message is empty')
@@ -61,17 +63,21 @@ Commands:
         except ValueError as e:
             await message.answer(f'Invalid input, error: {e}')
 
-    async def Associate_Password(self, message: Message, state: FSMContext) -> None:
+    async def Start_Password_Association(self, message: Message, state: FSMContext) -> None:
         await message.answer('Enter a theme to associate and password with it, for example: github secret_password')
-        await state.set_state(MatchStates.waiting_match)
+        await state.set_state(AssociationStates.waiting_new_association)
 
-    async def Input_Password_Association(self, message: Message, state: FSMContext) -> None:
+    async def Associate_Password(self, message: Message, state: FSMContext) -> None:
         try:
             if message.text is None:
                 raise ValueError('message is empty')
 
-            association, password = message.text.split()
-            if association == '' or password == '':
+            association: str = ''
+            password: str = ''
+
+            try:
+                association, password = message.text.split()
+            except:
                 raise ValueError('format should be name password')
 
             if message.from_user is None or message.from_user.username is None:
@@ -86,9 +92,12 @@ Commands:
         except ValueError as e:
             await message.answer(f'Invalid input, error: {e}')
 
+        except Exception as e:
+            await message.answer(f'You already have this association')
+
     async def Print_User_Associations(self, message: Message) -> None:
         if message.from_user is None or message.from_user.username is None:
-            await message.answer('cant find your username')
+            await message.answer('Cant find your username')
             return
 
         try:
@@ -101,4 +110,33 @@ Commands:
 
             await message.answer(answer)
         except:
-            await message.answer('cant find your associations, are you sure, that you have it?')
+            await message.answer('You dont have any associations')
+
+    async def Start_Association_Changing(self, message: Message, state: FSMContext) -> None:
+        await message.answer('Enter a theme to associate and new password for it')
+        await state.set_state(AssociationStates.waiting_changing_association)
+
+    async def Change_Association(self, message: Message, state: FSMContext) -> None:
+        if message.from_user is None or message.from_user.username is None:
+            await message.answer('Cant find your name')
+            return
+
+        try:
+            if message.text is None:
+                raise ValueError('message is empty')
+
+            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+            association, password = message.text.split()
+            if association == '' or password == '':
+                raise ValueError('format should be: name password')
+
+            await self.repo.Change_Association_Password(user_id, password, association)
+
+            await message.answer(f'Successfully changed your association {association}')
+            await state.clear()
+
+        except ValueError as e:
+            await message.answer(f'Invalid input, error: {e}')
+
+        except Exception as e:
+            await message.answer(f'Error: {e}')
