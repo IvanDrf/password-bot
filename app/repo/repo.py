@@ -1,10 +1,10 @@
 from typing import Final
 import aiosqlite
 
-from app.config import Config
+from config.config import Config
 from app.repo.query.creator.creator import TableCreator
 from app.repo.query.user.user import UserAdder, UserFinder
-from app.repo.query.password.password import PasswordAssociater
+from app.repo.query.password.password import PasswordAssociater, AssociationFinder
 from app.repo.query.common.common import Associator
 
 from app.repo.errors import UserException
@@ -65,5 +65,14 @@ class Repo:
         async with aiosqlite.connect(self.__db_name) as db:
             await db.execute(PasswordAssociater.Associate_Password(),
                              (password, association, user_ID))
+            await db.commit()
+
+    async def Change_Association_Password(self, user_ID: int, password: str, association: str) -> None:
+        async with (aiosqlite.connect(self.__db_name)) as db:
+            cursor:  aiosqlite.Cursor = await db.execute(PasswordAssociater.Change_Association_Password(), (password, association, user_ID))
+
+            if cursor.rowcount <= 0:
+                raise UserException(
+                    f'cant find association with {association}')
 
             await db.commit()

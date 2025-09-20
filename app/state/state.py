@@ -6,8 +6,9 @@ class LengthStates(StatesGroup):
     waiting_length: State = State()
 
 
-class MatchStates(StatesGroup):
+class AssociationStates(StatesGroup):
     '''
     Waiting for a message to bind the password
     '''
-    waiting_match: State = State()
+    waiting_new_association: State = State()
+    waiting_changing_association: State = State()

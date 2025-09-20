@@ -1,4 +1,4 @@
-from app.config import Config
+from config.config import Config
 from aiogram import Bot
 from app.handlers.handlers import Handler
 import asyncio

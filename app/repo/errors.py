@@ -7,6 +7,6 @@ class UserException(Exception):
 
     def __str__(self) -> str:
         if self.message:
-            return f'User Exception: {self.message}'
+            return f'{self.message}'
 
         return 'User Exception raised'
