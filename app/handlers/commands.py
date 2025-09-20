@@ -5,8 +5,10 @@ from typing import Final
 from app.password.generator import Generator
 from app.state.state import LengthStates, AssociationStates
 from app.repo.repo import Repo
-from app.config import Config
+from config.config import Config
 from app.repo.errors import UserException
+from app.utils.converter import NumberConverter, MessageParser
+from app.utils.respondent import Respondent
 
 
 class BotCommands:
@@ -57,10 +59,9 @@ Commands:
             if message.text is None:
                 raise ValueError('message is empty')
 
-            length: int = int(message.text)
+            length: int = NumberConverter.From_Str_To_Positive_Int(
+                message.text)
 
-            if length <= 0:
-                raise ValueError('given not positive number')
             password: str = Generator.Generate_Password(length)
 
             await message.answer(f'Your password: {password}')
@@ -74,19 +75,13 @@ Commands:
 
     async def Associate_Password(self, message: Message, state: FSMContext) -> None:
         try:
+            if message.from_user is None or message.from_user.username is None:
+                raise ValueError('cant find your username')
+
             if message.text is None:
                 raise ValueError('message is empty')
 
-            association: str = ''
-            password: str = ''
-
-            try:
-                association, password = message.text.split()
-            except:
-                raise ValueError('format should be name password')
-
-            if message.from_user is None or message.from_user.username is None:
-                raise ValueError('cant find your username')
+            association, password = MessageParser.ParseMessage(message.text)
 
             user_ID: int = await self.repo.Find_User_By_Username(message.from_user.username)
             await self.repo.Associate_Password(user_ID, password, association)
@@ -110,10 +105,8 @@ Commands:
         try:
             user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
             associations: list[tuple[str, str]] = await self.repo.Find_Password_Associations(user_id)
-            answer: str = ''
-            for i in range(len(associations)):
-                answer += str(i + 1) + ') ' + \
-                    associations[i][0] + ' | ' + associations[i][1] + '\n'
+
+            answer: str = Respondent.Create_Associations_List(associations)
 
             await message.answer(answer)
         except:
@@ -133,9 +126,8 @@ Commands:
                 raise ValueError('message is empty')
 
             user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
-            association, password = message.text.split()
-            if association == '' or password == '':
-                raise ValueError('format should be: name password')
+
+            association, password = MessageParser.ParseMessage(message.text)
 
             await self.repo.Change_Association_Password(user_id, password, association)
 

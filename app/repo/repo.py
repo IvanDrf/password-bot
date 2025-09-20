@@ -1,7 +1,7 @@
 from typing import Final
 import aiosqlite
 
-from app.config import Config
+from config.config import Config
 from app.repo.query.creator.creator import TableCreator
 from app.repo.query.user.user import UserAdder, UserFinder
 from app.repo.query.password.password import PasswordAssociater, AssociationFinder
