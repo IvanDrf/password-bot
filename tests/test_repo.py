@@ -33,8 +33,7 @@ def association() -> str:
 
 @pytest_asyncio.fixture(scope='session')
 async def repo() -> Repo:
-    cfg: Config = Config()
-    cfg.db_name = db_name
+    cfg: Config = Config(token='', db_name=db_name)
 
     await Drop_Tables()
     repo: Repo = await Repo.New(cfg)
