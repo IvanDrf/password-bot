@@ -5,7 +5,7 @@ import asyncio
 
 
 async def main() -> None:
-    cfg: Config = Config()
+    cfg: Config = Config.New()
 
     handler: Handler = await Handler.New(cfg)
     handler.Register_Handlers()
