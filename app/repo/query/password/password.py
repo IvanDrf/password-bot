@@ -11,10 +11,3 @@ class PasswordAssociater:
     def Change_Association_Password() -> str:
         '''want: password, association, user_id'''
         return f'UPDATE {Tables.passwords} SET password = ? WHERE association = ? AND user_id = ?'
-
-
-class AssociationFinder:
-    @staticmethod
-    def Find_Association() -> str:
-        '''want: password'''
-        return f'SELECT association FROM {Tables.passwords} WHERE password = ?'
