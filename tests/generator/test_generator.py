@@ -1,10 +1,5 @@
 from app.password.generator import PasswordGenerator
-from pytest import fixture
-
-
-@fixture
-def Length_List() -> list[int]:
-    return [0, 5, 6, 10]
+from tests.generator.fixture import *
 
 
 def test_Generator(Length_List) -> None:
