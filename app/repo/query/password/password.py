@@ -11,3 +11,8 @@ class PasswordAssociater:
     def Change_Association_Password() -> str:
         '''want: password, association, user_id'''
         return f'UPDATE {Tables.passwords} SET password = ? WHERE association = ? AND user_id = ?'
+
+    @staticmethod
+    def Delete_Association() -> str:
+        '''want: association, user_id'''
+        return f'DELETE FROM {Tables.passwords} WHERE user_id = ? AND association = ?'

@@ -1,4 +1,4 @@
-from app.password.generator import Generator
+from app.password.generator import PasswordGenerator
 from pytest import fixture
 
 
@@ -11,7 +11,7 @@ def test_Generator(Length_List) -> None:
     passwords: list[str] = []
 
     for length in Length_List:
-        passwords.append(Generator.Generate_Password(length))
+        passwords.append(PasswordGenerator.Generate_Password(length))
 
     for length, password in zip(Length_List, passwords):
         assert length == len(password)

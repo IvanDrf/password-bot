@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from app.state.state import LengthStates, AssociationStates
 
 from config.config import Config
-from app.handlers.commands import BotCommands
+from app.handlers.commands.commands import BotCommands
 from app.handlers.messages import Message_Handler
 
 
@@ -31,14 +31,15 @@ class Handler:
         self.__Register_Password_Association()
         self.__Register_Association_Print()
         self.__Register_Association_Changing()
+        self.__Register_Association_Deletion()
 
         self.__Register_Messages()
 
-    async def Start_Handler(self, message: Message, state: FSMContext) -> None:
-        await self.commands.Start_Handler(message, state)
+    async def Start(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Start(message, state)
 
-    async def Help_Handler(self, message: Message, state: FSMContext) -> None:
-        await self.commands.Help_Handler(message, state)
+    async def Help(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Help(message, state)
 
     async def Start_Password_Generation(self, message: Message, state: FSMContext) -> None:
         await self.commands.Start_Password_Generation(message, state)
@@ -61,14 +62,20 @@ class Handler:
     async def Change_Association(self, message: Message, state: FSMContext) -> None:
         await self.commands.Change_Association(message, state)
 
+    async def Start_Association_Deletion(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Start_Association_Deletion(message, state)
+
+    async def Delete_Association(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Delete_Association(message, state)
+
     async def Message_Handler(self, message: Message, state: FSMContext) -> None:
         await Message_Handler(message, state)
 
     def __Register_Start(self) -> None:
-        self.dp.message.register(self.Start_Handler, CommandStart())
+        self.dp.message.register(self.Start, CommandStart())
 
     def __Register_Help(self) -> None:
-        self.dp.message.register(self.Help_Handler, Command('help'))
+        self.dp.message.register(self.Help, Command('help'))
 
     def __Register_Password_Generation(self) -> None:
         self.dp.message.register(
@@ -90,6 +97,12 @@ class Handler:
             self.Start_Association_Changing, Command('change'))
         self.dp.message.register(
             self.Change_Association, AssociationStates.waiting_changing_association)
+
+    def __Register_Association_Deletion(self) -> None:
+        self.dp.message.register(
+            self.Start_Association_Deletion, Command('del'))
+        self.dp.message.register(
+            self.Delete_Association, AssociationStates.waiting_deletion_association)
 
     def __Register_Messages(self) -> None:
         self.dp.message.register(self.Message_Handler, F.text)
