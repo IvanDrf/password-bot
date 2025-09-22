@@ -40,7 +40,7 @@ class Repo:
     async def Find_User_By_Username(self, username: str) -> int:
         async with aiosqlite.connect(self.__db_name) as db:
             res = await db.execute_fetchall(UserFinder.Find_UserID_By_Name(), (username,))
-            if res is None:
+            if res is None or not res:
                 raise UserException(
                     f'cant find user with that username: {username}')
 
@@ -50,10 +50,10 @@ class Repo:
         raise UserException(f'cant find user with that username: {username}')
 
     async def Find_Password_Associations(self, user_id: int) -> list[tuple[str, str]]:
-        async with (aiosqlite.connect(self.__db_name)) as db:
+        async with aiosqlite.connect(self.__db_name) as db:
             res = await db.execute_fetchall(Associator.Find_User_Passwords(), (user_id,))
-            if res is None:
-                raise UserException('cant find passwords for this user')
+            if res is None or not res:
+                raise UserException('cant find associations for this user')
 
             passwords: list[tuple[str, str]] = []
             for row in res:
@@ -61,15 +61,15 @@ class Repo:
 
             return passwords
 
-    async def Associate_Password(self, user_ID: int, password: str, association: str) -> None:
+    async def Associate_Password(self, user_id: int, password: str, association: str) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
             await db.execute(PasswordAssociater.Associate_Password(),
-                             (password, association, user_ID))
+                             (password, association, user_id))
             await db.commit()
 
-    async def Change_Association_Password(self, user_ID: int, password: str, association: str) -> None:
+    async def Change_Association_Password(self, user_id: int, password: str, association: str) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
-            cursor:  aiosqlite.Cursor = await db.execute(PasswordAssociater.Change_Association_Password(), (password, association, user_ID))
+            cursor:  aiosqlite.Cursor = await db.execute(PasswordAssociater.Change_Association_Password(), (password, association, user_id))
 
             if cursor.rowcount <= 0:
                 raise UserException(
@@ -77,9 +77,9 @@ class Repo:
 
             await db.commit()
 
-    async def Delete_Association(self, user_ID: int, association: str) -> None:
+    async def Delete_Association(self, user_id: int, association: str) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
-            cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_Association(), (user_ID, association))
+            cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_Association(), (user_id, association))
             if cursor.rowcount <= 0:
                 raise UserException(
                     f'cant delete association {association}'

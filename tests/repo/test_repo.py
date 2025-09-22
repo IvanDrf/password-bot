@@ -1,49 +1,9 @@
-import aiosqlite
-import pytest_asyncio
 import pytest
 
-from typing import Final
 
 from app.repo.repo import Repo
 from app.repo.tables import Tables
-from config.config import Config
-
-db_name: Final = 'test.db'
-
-
-@pytest.fixture
-def username() -> str:
-    return 'test_user'
-
-
-@pytest.fixture
-def password() -> str:
-    return 'super_password'
-
-
-@pytest.fixture
-def new_password() -> str:
-    return 'new_super_password'
-
-
-@pytest.fixture
-def association() -> str:
-    return 'association_example'
-
-
-@pytest.fixture
-def bad_association() -> str:
-    return 'bad_association'
-
-
-@pytest_asyncio.fixture(scope='session')
-async def repo() -> Repo:
-    cfg: Config = Config(token='', db_name=db_name)
-
-    await Drop_Tables()
-    repo: Repo = await Repo.New(cfg)
-
-    return repo
+from tests.repo.fixture import *
 
 
 @pytest.mark.asyncio
@@ -91,6 +51,36 @@ async def test_Associate_Password(repo: Repo, username: str, password: str, asso
 
 
 @pytest.mark.asyncio
+async def test_Bad_Associate_Password(repo: Repo, password: str, association: str) -> None:
+    try:
+        await repo.Associate_Password(-1, password, association)
+        pytest.fail('shouldnt add association with bad user_id')
+    except Exception as e:
+        assert 'UNIQUE constraint failed' in e.__str__()
+
+
+@pytest.mark.asyncio
+async def test_Find_Password_Associations(repo: Repo, username: str, password: str, association: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
+    try:
+        associations: list[tuple[str, str]] = await repo.Find_Password_Associations(user_id)
+        excepted: list[tuple[str, str]] = [(association, password)]
+
+        assert associations == excepted
+    except Exception as e:
+        pytest.fail(f'shouldnt be a error: {e}')
+
+
+@pytest.mark.asyncio
+async def test_Bad_Find_Password_Associations(repo: Repo) -> None:
+    try:
+        _: list[tuple[str, str]] = await repo.Find_Password_Associations(-1)
+        pytest.fail('should find associations for user who doesnt exist')
+    except Exception as e:
+        assert e.__str__() == 'cant find associations for this user'
+
+
+@pytest.mark.asyncio
 async def test_Change_Association_Password(repo: Repo, username: str, new_password: str, association: str) -> None:
     user_id: int = await repo.Find_User_By_Username(username)
 
@@ -99,6 +89,16 @@ async def test_Change_Association_Password(repo: Repo, username: str, new_passwo
 
     except Exception as e:
         assert e.__str__() == ''
+
+
+@pytest.mark.asyncio
+async def test_Bad_Change_Association_Password(repo: Repo, username: str, new_password: str, bad_association: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
+    try:
+        await repo.Change_Association_Password(user_id, new_password, bad_association)
+        pytest.fail('shouldnt change bad association')
+    except Exception as e:
+        assert e.__str__() == f'cant find association with {bad_association}'
 
 
 @pytest.mark.asyncio
@@ -112,7 +112,7 @@ async def test_Delete_Association(repo: Repo, username: str, association: str) -
 
 
 @pytest.mark.asyncio
-async def test_Delete_Bad_Association(repo: Repo, username: str, bad_association: str) -> None:
+async def test_Bad_Delete_Association(repo: Repo, username: str, bad_association: str) -> None:
     user_id: int = await repo.Find_User_By_Username(username)
 
     try:
@@ -120,11 +120,3 @@ async def test_Delete_Bad_Association(repo: Repo, username: str, bad_association
         pytest.fail('shouldnt delete bad association')
     except Exception as e:
         assert e.__str__() == f'cant delete association {bad_association}'
-
-
-async def Drop_Tables() -> None:
-    async with aiosqlite.connect(db_name) as db:
-        await db.execute(f'DROP TABLE IF EXISTS {Tables.passwords}')
-        await db.execute(f'DROP TABLE IF EXISTS {Tables.users}')
-
-        await db.commit()

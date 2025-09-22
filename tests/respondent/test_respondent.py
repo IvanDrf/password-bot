@@ -1,10 +1,6 @@
 import pytest
 from app.utils.respondent import Respondent
-
-
-@pytest.fixture
-def associations() -> list[tuple[str, str]]:
-    return [('first', 'second'), ('third', 'fourth'), ('fifth', 'sixth')]
+from tests.respondent.fixture import *
 
 
 def test_Responder(associations: list[tuple[str, str]]) -> None:
