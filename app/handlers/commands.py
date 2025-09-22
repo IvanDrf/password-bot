@@ -8,6 +8,7 @@ from app.repo.repo import Repo
 from config.config import Config
 from app.utils.converter import NumberConverter, MessageParser
 from app.utils.respondent import Respondent
+from app.repo.errors import UserException
 
 
 class BotCommands:
@@ -161,6 +162,9 @@ Commands:
             await state.clear()
         except ValueError as e:
             await message.answer(f'Invalid input, error: {e}')
+
+        except UserException as e:
+            await message.answer(f'Error: {e}')
 
         except Exception as e:
             await message.answer(f'Cant find your association {message.text}')
