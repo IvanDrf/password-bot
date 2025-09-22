@@ -12,7 +12,7 @@ db_name: Final = 'test.db'
 
 
 @pytest.fixture
-def user() -> str:
+def username() -> str:
     return 'test_user'
 
 
@@ -31,6 +31,11 @@ def association() -> str:
     return 'association_example'
 
 
+@pytest.fixture
+def bad_association() -> str:
+    return 'bad_association'
+
+
 @pytest_asyncio.fixture(scope='session')
 async def repo() -> Repo:
     cfg: Config = Config(token='', db_name=db_name)
@@ -42,25 +47,25 @@ async def repo() -> Repo:
 
 
 @pytest.mark.asyncio
-async def test_Add_User(repo: Repo, user: str) -> None:
-    await repo.Add_User(user)
+async def test_Add_User(repo: Repo, username: str) -> None:
+    await repo.Add_User(username)
 
-    id: int = await repo.Find_User_By_Username(user)
+    id: int = await repo.Find_User_By_Username(username)
     assert id == 1
 
 
 @pytest.mark.asyncio
-async def test_Bad_Add_User(repo: Repo, user: str) -> None:
+async def test_Bad_Add_User(repo: Repo, username: str) -> None:
     try:
-        await repo.Add_User(user)
+        await repo.Add_User(username)
         pytest.fail(f'shouldnt have added not UNIQUE user in {Tables.users}')
     except Exception as e:
         assert 'UNIQUE' in e.__str__()
 
 
 @pytest.mark.asyncio
-async def test_Find_User(repo: Repo, user: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(user)
+async def test_Find_User(repo: Repo, username: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
 
     assert user_id == 1
 
@@ -75,8 +80,8 @@ async def test_Bad_Find_User(repo: Repo) -> None:
 
 
 @pytest.mark.asyncio
-async def test_Associate_Password(repo: Repo, user: str, password: str, association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(user)
+async def test_Associate_Password(repo: Repo, username: str, password: str, association: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
 
     try:
         await repo.Associate_Password(user_id, password, association)
@@ -86,14 +91,35 @@ async def test_Associate_Password(repo: Repo, user: str, password: str, associat
 
 
 @pytest.mark.asyncio
-async def test_Change_Association_Password(repo: Repo, user: str, new_password: str, association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(user)
+async def test_Change_Association_Password(repo: Repo, username: str, new_password: str, association: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
 
     try:
         await repo.Change_Association_Password(user_id, new_password, association)
 
     except Exception as e:
         assert e.__str__() == ''
+
+
+@pytest.mark.asyncio
+async def test_Delete_Association(repo: Repo, username: str, association: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
+
+    try:
+        await repo.Delete_Association(user_id, association)
+    except Exception as e:
+        assert e.__str__() == ''
+
+
+@pytest.mark.asyncio
+async def test_Delete_Bad_Association(repo: Repo, username: str, bad_association: str) -> None:
+    user_id: int = await repo.Find_User_By_Username(username)
+
+    try:
+        await repo.Delete_Association(user_id, bad_association)
+        pytest.fail('shouldnt delete bad association')
+    except Exception as e:
+        assert e.__str__() == f'cant delete association {bad_association}'
 
 
 async def Drop_Tables() -> None:

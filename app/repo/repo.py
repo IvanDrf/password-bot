@@ -68,7 +68,7 @@ class Repo:
             await db.commit()
 
     async def Change_Association_Password(self, user_ID: int, password: str, association: str) -> None:
-        async with (aiosqlite.connect(self.__db_name)) as db:
+        async with aiosqlite.connect(self.__db_name) as db:
             cursor:  aiosqlite.Cursor = await db.execute(PasswordAssociater.Change_Association_Password(), (password, association, user_ID))
 
             if cursor.rowcount <= 0:
@@ -79,6 +79,10 @@ class Repo:
 
     async def Delete_Association(self, user_ID: int, association: str) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
-            await db.execute(PasswordAssociater.Delete_Association(), (user_ID, association))
+            cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_Association(), (user_ID, association))
+            if cursor.rowcount <= 0:
+                raise UserException(
+                    f'cant delete association {association}'
+                )
 
             await db.commit()
