@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from app.state.state import LengthStates, AssociationStates
 
 from config.config import Config
-from app.handlers.commands import BotCommands
+from app.handlers.commands.commands import BotCommands
 from app.handlers.messages import Message_Handler
 
 
@@ -35,11 +35,11 @@ class Handler:
 
         self.__Register_Messages()
 
-    async def Start_Handler(self, message: Message, state: FSMContext) -> None:
-        await self.commands.Start_Handler(message, state)
+    async def Start(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Start(message, state)
 
-    async def Help_Handler(self, message: Message, state: FSMContext) -> None:
-        await self.commands.Help_Handler(message, state)
+    async def Help(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Help(message, state)
 
     async def Start_Password_Generation(self, message: Message, state: FSMContext) -> None:
         await self.commands.Start_Password_Generation(message, state)
@@ -72,10 +72,10 @@ class Handler:
         await Message_Handler(message, state)
 
     def __Register_Start(self) -> None:
-        self.dp.message.register(self.Start_Handler, CommandStart())
+        self.dp.message.register(self.Start, CommandStart())
 
     def __Register_Help(self) -> None:
-        self.dp.message.register(self.Help_Handler, Command('help'))
+        self.dp.message.register(self.Help, Command('help'))
 
     def __Register_Password_Generation(self) -> None:
         self.dp.message.register(

@@ -7,7 +7,7 @@ from app.repo.query.user.user import UserAdder, UserFinder
 from app.repo.query.password.password import PasswordAssociater
 from app.repo.query.common.common import Associator
 
-from app.repo.errors import UserException
+from app.errors.errors import UserException
 
 
 class Repo:

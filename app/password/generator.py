@@ -3,9 +3,9 @@ from typing import Final
 from random import choice
 
 
-class Generator():
+class PasswordGenerator():
     __characters: Final = digits + ascii_letters + punctuation
 
     @staticmethod
     def Generate_Password(length: int) -> str:
-        return ''.join(choice(Generator.__characters) for _ in range(length))
+        return ''.join(choice(PasswordGenerator.__characters) for _ in range(length))
