@@ -6,7 +6,6 @@ from app.password.generator import Generator
 from app.state.state import LengthStates, AssociationStates
 from app.repo.repo import Repo
 from config.config import Config
-from app.repo.errors import UserException
 from app.utils.converter import NumberConverter, MessageParser
 from app.utils.respondent import Respondent
 
@@ -19,6 +18,7 @@ Commands:
 /generate - start generating a new password
 /associate - associate word with your password
 /change - change password to your association
+/del - delete your association
 /my - print your associations
 '''
 
@@ -118,7 +118,7 @@ Commands:
 
     async def Change_Association(self, message: Message, state: FSMContext) -> None:
         if message.from_user is None or message.from_user.username is None:
-            await message.answer('Cant find your name')
+            await message.answer('Cant find your username')
             return
 
         try:
@@ -139,3 +139,28 @@ Commands:
 
         except Exception as e:
             await message.answer(f'Error: {e}')
+
+    async def Start_Association_Deletion(self, message: Message, state: FSMContext) -> None:
+        await message.answer('Enter the association you want to delete, for example: github')
+        await state.set_state(AssociationStates.waiting_deletion_association)
+
+    async def Delete_Association(self, message: Message, state: FSMContext) -> None:
+        if message.from_user is None or message.from_user.username is None:
+            await message.answer('Cant find your username')
+            return
+
+        try:
+            if message.text is None:
+                raise ValueError('message is empty')
+
+            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+
+            await self.repo.Delete_Association(user_id, message.text)
+
+            await message.answer(f'Successfully deleted your association {message.text}')
+            await state.clear()
+        except ValueError as e:
+            await message.answer(f'Invalid input, error: {e}')
+
+        except Exception as e:
+            await message.answer(f'Cant find your association {message.text}')

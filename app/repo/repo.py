@@ -76,3 +76,9 @@ class Repo:
                     f'cant find association with {association}')
 
             await db.commit()
+
+    async def Delete_Association(self, user_ID: int, association: str) -> None:
+        async with aiosqlite.connect(self.__db_name) as db:
+            await db.execute(PasswordAssociater.Delete_Association(), (user_ID, association))
+
+            await db.commit()

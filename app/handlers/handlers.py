@@ -31,6 +31,7 @@ class Handler:
         self.__Register_Password_Association()
         self.__Register_Association_Print()
         self.__Register_Association_Changing()
+        self.__Register_Association_Deletion()
 
         self.__Register_Messages()
 
@@ -61,6 +62,12 @@ class Handler:
     async def Change_Association(self, message: Message, state: FSMContext) -> None:
         await self.commands.Change_Association(message, state)
 
+    async def Start_Association_Deletion(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Start_Association_Deletion(message, state)
+
+    async def Delete_Association(self, message: Message, state: FSMContext) -> None:
+        await self.commands.Delete_Association(message, state)
+
     async def Message_Handler(self, message: Message, state: FSMContext) -> None:
         await Message_Handler(message, state)
 
@@ -90,6 +97,12 @@ class Handler:
             self.Start_Association_Changing, Command('change'))
         self.dp.message.register(
             self.Change_Association, AssociationStates.waiting_changing_association)
+
+    def __Register_Association_Deletion(self) -> None:
+        self.dp.message.register(
+            self.Start_Association_Deletion, Command('del'))
+        self.dp.message.register(
+            self.Delete_Association, AssociationStates.waiting_deletion_association)
 
     def __Register_Messages(self) -> None:
         self.dp.message.register(self.Message_Handler, F.text)
