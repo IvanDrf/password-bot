@@ -53,6 +53,8 @@ class AssociationChanger:
         self.encrypter: Encrypter = encrypter
 
     async def Start_Association_Changing(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         await message.answer('Enter a theme to associate and new password for it')
         await state.set_state(AssociationStates.waiting_changing_association)
 
@@ -88,6 +90,8 @@ class AssociationDeleter:
         self.repo: Repo = repo
 
     async def Start_Association_Deletion(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         await message.answer('Enter the association you want to delete, for example: github')
         await state.set_state(AssociationStates.waiting_deletion_association)
 
