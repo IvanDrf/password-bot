@@ -63,8 +63,8 @@ async def test_Bad_Associate_Password(repo: Repo, password: str, association: st
 async def test_Find_Password_Associations(repo: Repo, username: str, password: str, association: str) -> None:
     user_id: int = await repo.Find_User_By_Username(username)
     try:
-        associations: list[tuple[str, str]] = await repo.Find_Password_Associations(user_id)
-        excepted: list[tuple[str, str]] = [(association, password)]
+        associations: list[list[str]] = await repo.Find_Password_Associations(user_id)
+        excepted: list[list[str]] = [[association, password]]
 
         assert associations == excepted
     except Exception as e:
@@ -74,7 +74,7 @@ async def test_Find_Password_Associations(repo: Repo, username: str, password: s
 @pytest.mark.asyncio
 async def test_Bad_Find_Password_Associations(repo: Repo) -> None:
     try:
-        _: list[tuple[str, str]] = await repo.Find_Password_Associations(-1)
+        _: list[list[str]] = await repo.Find_Password_Associations(-1)
         pytest.fail('should find associations for user who doesnt exist')
     except Exception as e:
         assert e.__str__() == 'cant find associations for this user'

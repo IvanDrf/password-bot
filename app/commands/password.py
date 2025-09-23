@@ -12,6 +12,8 @@ class PasswordCreator:
         self.repo: Repo = repo
 
     async def Start_Password_Generation(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         await message.answer('Enter password length:')
         await state.set_state(LengthStates.waiting_length)
 

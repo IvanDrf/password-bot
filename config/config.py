@@ -6,9 +6,10 @@ load_dotenv()
 
 
 class Config:
-    def __init__(self, token: str, db_name: str) -> None:
+    def __init__(self, token: str, db_name: str, key: str) -> None:
         self.token: str = token
         self.db_name: str = db_name
+        self.key: str = key
 
     @classmethod
     def New(cls) -> 'Config':
@@ -18,4 +19,7 @@ class Config:
         if getenv('DB_NAME') is None:
             raise ValueError('cant get database name')
 
-        return Config(cast(str, getenv('TOKEN')), cast(str, getenv('DB_NAME')))
+        if getenv('KEY') is None:
+            raise ValueError('cant get key for encryption')
+
+        return Config(cast(str, getenv('TOKEN')), cast(str, getenv('DB_NAME')), cast(str, getenv('KEY')))

@@ -6,11 +6,13 @@ from app.repo.repo import Repo
 from app.errors.errors import UserException
 from app.utils.converter import MessageParser
 from app.utils.respondent import Respondent
+from app.utils.encrypter import Encrypter
 
 
 class AssociationAdder:
-    def __init__(self, repo: Repo) -> None:
+    def __init__(self, repo: Repo, encrypter: Encrypter) -> None:
         self.repo: Repo = repo
+        self.encrypter: Encrypter = encrypter
 
     async def Start_Password_Association(self, message: Message, state: FSMContext) -> None:
         await message.answer('Enter a theme to associate and password with it, for example: github secret_password')
@@ -26,8 +28,11 @@ class AssociationAdder:
 
             association, password = MessageParser.ParseMessage(message.text)
 
-            user_ID: int = await self.repo.Find_User_By_Username(message.from_user.username)
-            await self.repo.Associate_Password(user_ID, password, association)
+            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+
+            encrypted_password: str = self.encrypter.encrypt(
+                password.encode()).decode()
+            await self.repo.Associate_Password(user_id, encrypted_password, association)
 
             await message.answer(f'Successfully associated your password with {association}')
             await state.clear()
@@ -42,10 +47,13 @@ class AssociationAdder:
 
 
 class AssociationChanger:
-    def __init__(self, repo: Repo) -> None:
+    def __init__(self, repo: Repo, encrypter: Encrypter) -> None:
         self.repo: Repo = repo
+        self.encrypter: Encrypter = encrypter
 
     async def Start_Association_Changing(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         await message.answer('Enter a theme to associate and new password for it')
         await state.set_state(AssociationStates.waiting_changing_association)
 
@@ -61,8 +69,10 @@ class AssociationChanger:
             user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
 
             association, password = MessageParser.ParseMessage(message.text)
+            encrypted_password: str = self.encrypter.encrypt(
+                password.encode()).decode()
 
-            await self.repo.Change_Association_Password(user_id, password, association)
+            await self.repo.Change_Association_Password(user_id, encrypted_password, association)
 
             await message.answer(f'Successfully changed your association {association}')
             await state.clear()
@@ -79,6 +89,8 @@ class AssociationDeleter:
         self.repo: Repo = repo
 
     async def Start_Association_Deletion(self, message: Message, state: FSMContext) -> None:
+        await state.clear()
+
         await message.answer('Enter the association you want to delete, for example: github')
         await state.set_state(AssociationStates.waiting_deletion_association)
 
@@ -108,8 +120,9 @@ class AssociationDeleter:
 
 
 class AssociationPrinter:
-    def __init__(self, repo: Repo) -> None:
+    def __init__(self, repo: Repo, encrypter: Encrypter) -> None:
         self.repo: Repo = repo
+        self.encrypter: Encrypter = encrypter
 
     async def Print_User_Associations(self, message: Message, state: FSMContext) -> None:
         await state.clear()
@@ -120,9 +133,14 @@ class AssociationPrinter:
 
         try:
             user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
-            associations: list[tuple[str, str]] = await self.repo.Find_Password_Associations(user_id)
+            associations: list[list[str]] = await self.repo.Find_Password_Associations(user_id)
 
-            answer: str = Respondent.Create_Associations_List(associations)
+            for i in range(len(associations)):
+                associations[i][1] = self.encrypter.decrypt(
+                    associations[i][1]).decode()
+
+            answer: str = Respondent.Create_Associations_List(
+                associations)
 
             await message.answer(answer)
         except:

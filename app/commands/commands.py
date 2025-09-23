@@ -1,32 +1,38 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from app.handlers.commands.associations import AssociationAdder, AssociationChanger, AssociationDeleter, AssociationPrinter
-from app.handlers.commands.password import PasswordCreator
-from app.handlers.commands.starter import Starter
-from app.handlers.commands.helper import Helper
+from app.commands.associations import AssociationAdder, AssociationChanger, AssociationDeleter, AssociationPrinter
+from app.commands.password import PasswordCreator
+from app.commands.starter import Starter
+from app.commands.helper import Helper
 from app.repo.repo import Repo
+from app.utils.encrypter import Encrypter
 from config.config import Config
 
 
 class BotCommands:
-    def __init__(self, repo: Repo) -> None:
+    def __init__(self, cfg: Config, repo: Repo) -> None:
         self.repo: Repo = repo
 
         self.starter: Starter = Starter(repo)
         self.helper: Helper = Helper()
 
+        encrypter: Encrypter = Encrypter.New(cfg)
+
         self.password_creator: PasswordCreator = PasswordCreator(repo)
-        self.association_adder: AssociationAdder = AssociationAdder(repo)
-        self.association_changer: AssociationChanger = AssociationChanger(repo)
+        self.association_adder: AssociationAdder = AssociationAdder(
+            repo, encrypter)
+        self.association_changer: AssociationChanger = AssociationChanger(
+            repo, encrypter)
         self.association_deleter: AssociationDeleter = AssociationDeleter(repo)
-        self.association_printer: AssociationPrinter = AssociationPrinter(repo)
+        self.association_printer: AssociationPrinter = AssociationPrinter(
+            repo, encrypter)
 
     @classmethod
     async def New(cls, cfg: Config) -> 'BotCommands':
         repo: Repo = await Repo.New(cfg)
 
-        return cls(repo)
+        return cls(cfg, repo)
 
     async def Start(self, message: Message, state: FSMContext) -> None:
         await self.starter.Start(message, state)
