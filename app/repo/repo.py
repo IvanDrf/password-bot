@@ -49,15 +49,15 @@ class Repo:
 
         raise UserException(f'cant find user with that username: {username}')
 
-    async def Find_Password_Associations(self, user_id: int) -> list[tuple[str, str]]:
+    async def Find_Password_Associations(self, user_id: int) -> list[list[str]]:
         async with aiosqlite.connect(self.__db_name) as db:
             res = await db.execute_fetchall(Associator.Find_User_Passwords(), (user_id,))
             if res is None or not res:
                 raise UserException('cant find associations for this user')
 
-            passwords: list[tuple[str, str]] = []
+            passwords: list[list[str]] = []
             for row in res:
-                passwords.append((row[0], row[1]))
+                passwords.append([row[0], row[1]])
 
             return passwords
 
