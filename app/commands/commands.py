@@ -1,10 +1,10 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from app.handlers.commands.associations import AssociationAdder, AssociationChanger, AssociationDeleter, AssociationPrinter
-from app.handlers.commands.password import PasswordCreator
-from app.handlers.commands.starter import Starter
-from app.handlers.commands.helper import Helper
+from app.commands.associations import AssociationAdder, AssociationChanger, AssociationDeleter, AssociationPrinter
+from app.commands.password import PasswordCreator
+from app.commands.starter import Starter
+from app.commands.helper import Helper
 from app.repo.repo import Repo
 from app.utils.encrypter import Encrypter
 from config.config import Config

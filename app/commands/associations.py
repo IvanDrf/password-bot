@@ -7,7 +7,6 @@ from app.errors.errors import UserException
 from app.utils.converter import MessageParser
 from app.utils.respondent import Respondent
 from app.utils.encrypter import Encrypter
-from config.config import Config
 
 
 class AssociationAdder:

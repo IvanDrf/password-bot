@@ -7,8 +7,8 @@ from aiogram.fsm.context import FSMContext
 from app.state.state import LengthStates, AssociationStates
 
 from config.config import Config
-from app.handlers.commands.commands import BotCommands
-from app.handlers.messages import Message_Handler
+from app.commands.commands import BotCommands
+from app.messages.messages import Message_Handler
 
 
 class Handler:
