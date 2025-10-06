@@ -5,7 +5,7 @@ from typing import Final
 
 from app.repo.repo import Repo
 from app.repo.tables import Tables
-from app.utils.encrypter import Encrypter
+from utils.encrypter import Encrypter
 from config.config import Config
 
 db_name: Final = 'test.db'

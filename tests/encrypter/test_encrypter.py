@@ -1,4 +1,4 @@
-from app.utils.encrypter import Encrypter
+from utils.encrypter import Encrypter
 from tests.encrypter.fixture import encrypter, src
 
 

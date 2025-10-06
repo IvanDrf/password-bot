@@ -6,7 +6,7 @@ from app.commands.password import PasswordCreator
 from app.commands.starter import Starter
 from app.commands.helper import Helper
 from app.repo.repo import Repo
-from app.utils.encrypter import Encrypter
+from utils.encrypter import Encrypter
 from config.config import Config
 
 

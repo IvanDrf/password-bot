@@ -1,7 +1,7 @@
 import pytest
 from typing import Final
 
-from app.utils.encrypter import Encrypter
+from utils.encrypter import Encrypter
 from config.config import Config
 
 random_key: Final = 'u5HjK9n2XcQ7vEa1lP8gYmZpOqBwRkDyS3TfWxN0LtM='

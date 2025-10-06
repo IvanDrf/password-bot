@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 
 from app.repo.repo import Repo
 from app.state.state import LengthStates
-from app.utils.converter import NumberConverter
+from utils.converter import NumberConverter
 from app.password.generator import PasswordGenerator
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from app.utils.converter import NumberConverter, MessageParser
+from utils.converter import NumberConverter, MessageParser
 from tests.converter.fixture import *
 
 
