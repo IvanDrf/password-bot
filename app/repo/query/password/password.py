@@ -16,3 +16,8 @@ class PasswordAssociater:
     def Delete_Association() -> str:
         '''want: association, user_id'''
         return f'DELETE FROM {Tables.passwords} WHERE user_id = ? AND association = ?'
+
+    @staticmethod
+    def Delete_All_Associations() -> str:
+        '''want: user_id'''
+        return f'DELETE FROM {Tables.passwords} WHERE user_id = ?'

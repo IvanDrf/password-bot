@@ -86,3 +86,11 @@ class Repo:
                 )
 
             await db.commit()
+
+    async def Delete_All_Associations(self, user_id :int) -> None:
+        async with aiosqlite.connect(self.__db_name) as db:
+            cursor : aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_All_Associations(), (user_id,))
+            if cursor.rowcount <= 0:
+                raise UserException(f'you dont have any associations')
+            
+            await db.commit()

@@ -12,6 +12,7 @@ Commands:
 /associate - associate word with your password
 /change - change password to your association
 /del - delete your association
+/del_all - delete all your associations
 /my - print your associations
 '''
 
