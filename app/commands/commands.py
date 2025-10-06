@@ -66,3 +66,9 @@ class BotCommands:
 
     async def Delete_Association(self, message: Message, state: FSMContext) -> None:
         await self.association_deleter.Delete_Association(message, state)
+
+    async def Start_All_Associations_Deletion(self, message: Message, state: FSMContext) -> None:
+        await self.association_deleter.Start_All_Associations_Deletion(message, state) 
+
+    async def Delete_All_Associations(self, message: Message, state: FSMContext) -> None:
+        await self.association_deleter.Delete_All_Associations(message, state)

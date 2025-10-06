@@ -3,6 +3,7 @@ import pytest
 
 from app.repo.repo import Repo
 from app.repo.tables import Tables
+from app.errors.errors import UserException
 from tests.repo.fixture import *
 
 
@@ -120,3 +121,31 @@ async def test_Bad_Delete_Association(repo: Repo, username: str, bad_association
         pytest.fail('shouldnt delete bad association')
     except Exception as e:
         assert e.__str__() == f'cant delete association {bad_association}'
+
+
+@pytest.mark.asyncio
+async def test_Delete_All_Associations(repo: Repo, username :str, association :str, password :str) -> None:
+    user_id :int = await repo.Find_User_By_Username(username)
+
+    await repo.Associate_Password(user_id, password, association + '1')
+    await repo.Associate_Password(user_id, password, association + '2')
+
+    try:
+        await repo.Delete_All_Associations(user_id)
+    except Exception as e:
+        assert e.__str__() == ''
+    
+    try:
+        await repo.Find_Password_Associations(user_id)
+    except UserException as e:
+        assert e.__str__() == 'cant find associations for this user'
+
+
+@pytest.mark.asyncio
+async def test_Bad_Delete_All_Associations(repo :Repo, username: str) -> None:
+    user_id :int = await repo.Find_User_By_Username(username)
+
+    try:
+        await repo.Delete_All_Associations(user_id)
+    except UserException as e:
+        assert e.__str__() == 'you dont have any associations'

@@ -15,3 +15,6 @@ class AssociationStates(StatesGroup):
 
     # Waiting for a message to delete association
     waiting_deletion_association: State = State()
+
+    #Waiting for a message to delete all associations
+    waiting_deletion_all_associations: State = State()
