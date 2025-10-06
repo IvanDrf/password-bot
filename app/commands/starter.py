@@ -11,7 +11,7 @@ class Starter:
         [KeyboardButton(text='/start'), KeyboardButton(text='/help')],
         [KeyboardButton(text='/generate'), KeyboardButton(text='/associate')],
         [KeyboardButton(text='/change'), KeyboardButton(text='/del')],
-        [KeyboardButton(text='/my'), KeyboardButton(text='/del_all')]
+        [KeyboardButton(text='/my'), KeyboardButton(text='/del_all')],
     ])
 
     def __init__(self, repo: Repo) -> None:
