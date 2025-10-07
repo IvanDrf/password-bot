@@ -1,18 +1,14 @@
-from config.config import Config
-from aiogram import Bot
-from app.handlers.handlers import Handler
 import asyncio
+
+from config.config import Config
+from app.app import App
 
 
 async def main() -> None:
     cfg: Config = Config.New()
 
-    handler: Handler = await Handler.New(cfg)
-    handler.Register_Handlers()
-
-    bot: Bot = Bot(token=cfg.token)
-
-    await handler.dp.start_polling(bot)
+    app: App = await App.New(cfg)
+    await app.Run()
 
 
 if __name__ == '__main__':
