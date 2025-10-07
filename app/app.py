@@ -1,4 +1,5 @@
 from aiogram import Bot
+import logging
 
 from config.config import Config
 from app.handlers.handler import Handler
@@ -19,4 +20,5 @@ class App:
         return cls(handler, bot)
 
     async def Run(self) -> None:
+        logging.info('bot started successfully')
         await self.handler.dp.start_polling(self.bot)
