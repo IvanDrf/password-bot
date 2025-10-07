@@ -10,7 +10,7 @@ random_key: Final = 'u5HjK9n2XcQ7vEa1lP8gYmZpOqBwRkDyS3TfWxN0LtM='
 @pytest.fixture(scope='session')
 def encrypter() -> Encrypter:
     cfg: Config = Config(token='', db_name='',
-                         key=random_key)
+                         key=random_key, logger_level='')
 
     res: Encrypter = Encrypter.New(cfg)
     return res
