@@ -1,6 +1,5 @@
 from aiogram import Dispatcher, F
 from aiogram.filters import CommandStart, Command
-from aiogram.fsm.state import State
 
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
@@ -34,7 +33,7 @@ class Handler:
         self.__Register_Association_Deletion()
         self.__Register_All_Associations_Deletion()
 
-        self.__Register_Messages()
+        self.__Register_Messages() 
 
     async def Start(self, message: Message, state: FSMContext) -> None:
         await self.commands.Start(message, state)
