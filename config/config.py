@@ -1,16 +1,16 @@
 from dotenv import load_dotenv
 from os import getenv
-from typing import cast
+from typing import cast, Final
 
 load_dotenv()
 
 
 class Config:
     def __init__(self, token: str, db_name: str, key: str, logger_level: str) -> None:
-        self.token: str = token
-        self.db_name: str = db_name
-        self.key: str = key
-        self.logger_level: str = logger_level
+        self.token: Final = token
+        self.db_name: Final = db_name
+        self.key: Final = key
+        self.logger_level: Final = logger_level
 
     @classmethod
     def New(cls) -> 'Config':
