@@ -16,9 +16,6 @@ Commands:
 /my - print your associations
 '''
 
-    def __init__(self) -> None:
-        pass
-
     async def Help(self, message: Message, state: FSMContext) -> None:
         await state.clear()
 
