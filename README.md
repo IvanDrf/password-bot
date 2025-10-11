@@ -1,4 +1,5 @@
-# Password Telegram Bot
+# <img width="40" height="40" alt="image" src="https://github.com/user-attachments/assets/bed0a9e9-8b69-4ce2-8d3c-bff94b4954bc" />  Password Telegram Bot
+
 
 Telegram bot that allows you to generate, manage, associate passwords and save your associations. 
 Passwords are stored in the database in encrypted form
