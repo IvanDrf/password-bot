@@ -7,10 +7,10 @@ from app.handlers.handler import Handler
 
 class App:
     def __init__(self, handler: Handler, bot: Bot) -> None:
-        self.handler: Handler = handler
-        self.bot: Bot = bot
+        self.__handler: Handler = handler
+        self.__bot: Bot = bot
 
-        self.handler.Register_Handlers()
+        self.__handler.Register_Handlers()
 
     @classmethod
     async def New(cls, cfg: Config) -> 'App':
@@ -21,4 +21,4 @@ class App:
 
     async def Run(self) -> None:
         logging.info('bot started successfully')
-        await self.handler.dp.start_polling(self.bot)
+        await self.__handler.dp.start_polling(self.__bot)

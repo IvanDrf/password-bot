@@ -19,7 +19,11 @@ class AssociationPrinter:
             return
 
         try:
-            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+            user_id: int | None = await self.repo.Find_User_By_Username(message.from_user.username)
+            if user_id is None:
+                await message.answer(f'Cant find you in database, please enter /start')
+                return
+
             associations: list[list[str]] = await self.repo.Find_Password_Associations(user_id)
 
             for i in range(len(associations)):

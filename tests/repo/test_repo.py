@@ -11,7 +11,7 @@ from tests.repo.fixture import *
 async def test_Add_User(repo: Repo, username: str) -> None:
     await repo.Add_User(username)
 
-    id: int = await repo.Find_User_By_Username(username)
+    id: int | None = await repo.Find_User_By_Username(username)
     assert id == 1
 
 
@@ -26,7 +26,7 @@ async def test_Bad_Add_User(repo: Repo, username: str) -> None:
 
 @pytest.mark.asyncio
 async def test_Find_User(repo: Repo, username: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
+    user_id: int | None = await repo.Find_User_By_Username(username)
 
     assert user_id == 1
 
@@ -34,15 +34,17 @@ async def test_Find_User(repo: Repo, username: str) -> None:
 @pytest.mark.asyncio
 async def test_Bad_Find_User(repo: Repo) -> None:
     try:
-        await repo.Find_User_By_Username('')
-        pytest.fail(f'shouldnt find user with empty name in {Tables.users}')
+        user_id: int | None = await repo.Find_User_By_Username('')
+        assert user_id is None
     except Exception as e:
-        assert e.__str__() == 'cant find user with that username: '
+        pytest.fail('shouldnt raise exception')
 
 
 @pytest.mark.asyncio
 async def test_Associate_Password(repo: Repo, username: str, password: str, association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
 
     try:
         await repo.Associate_Password(user_id, password, association)
@@ -62,7 +64,10 @@ async def test_Bad_Associate_Password(repo: Repo, password: str, association: st
 
 @pytest.mark.asyncio
 async def test_Find_Password_Associations(repo: Repo, username: str, password: str, association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
+
     try:
         associations: list[list[str]] = await repo.Find_Password_Associations(user_id)
         excepted: list[list[str]] = [[association, password]]
@@ -83,8 +88,9 @@ async def test_Bad_Find_Password_Associations(repo: Repo) -> None:
 
 @pytest.mark.asyncio
 async def test_Change_Association_Password(repo: Repo, username: str, new_password: str, association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
-
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
     try:
         await repo.Change_Association_Password(user_id, new_password, association)
 
@@ -94,7 +100,10 @@ async def test_Change_Association_Password(repo: Repo, username: str, new_passwo
 
 @pytest.mark.asyncio
 async def test_Bad_Change_Association_Password(repo: Repo, username: str, new_password: str, bad_association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
+
     try:
         await repo.Change_Association_Password(user_id, new_password, bad_association)
         pytest.fail('shouldnt change bad association')
@@ -104,7 +113,9 @@ async def test_Bad_Change_Association_Password(repo: Repo, username: str, new_pa
 
 @pytest.mark.asyncio
 async def test_Delete_Association(repo: Repo, username: str, association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
 
     try:
         await repo.Delete_Association(user_id, association)
@@ -114,7 +125,9 @@ async def test_Delete_Association(repo: Repo, username: str, association: str) -
 
 @pytest.mark.asyncio
 async def test_Bad_Delete_Association(repo: Repo, username: str, bad_association: str) -> None:
-    user_id: int = await repo.Find_User_By_Username(username)
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
 
     try:
         await repo.Delete_Association(user_id, bad_association)
@@ -124,8 +137,10 @@ async def test_Bad_Delete_Association(repo: Repo, username: str, bad_association
 
 
 @pytest.mark.asyncio
-async def test_Delete_All_Associations(repo: Repo, username :str, association :str, password :str) -> None:
-    user_id :int = await repo.Find_User_By_Username(username)
+async def test_Delete_All_Associations(repo: Repo, username: str, association: str, password: str) -> None:
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
 
     await repo.Associate_Password(user_id, password, association + '1')
     await repo.Associate_Password(user_id, password, association + '2')
@@ -134,7 +149,7 @@ async def test_Delete_All_Associations(repo: Repo, username :str, association :s
         await repo.Delete_All_Associations(user_id)
     except Exception as e:
         assert e.__str__() == ''
-    
+
     try:
         await repo.Find_Password_Associations(user_id)
     except UserException as e:
@@ -142,9 +157,10 @@ async def test_Delete_All_Associations(repo: Repo, username :str, association :s
 
 
 @pytest.mark.asyncio
-async def test_Bad_Delete_All_Associations(repo :Repo, username: str) -> None:
-    user_id :int = await repo.Find_User_By_Username(username)
-
+async def test_Bad_Delete_All_Associations(repo: Repo, username: str) -> None:
+    user_id: int | None = await repo.Find_User_By_Username(username)
+    if user_id is None:
+        pytest.fail('user_id shouldnt be None')
     try:
         await repo.Delete_All_Associations(user_id)
     except UserException as e:
