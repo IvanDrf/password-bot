@@ -25,7 +25,10 @@ class AssociationDeleter:
             if message.text is None:
                 raise ValueError('message is empty')
 
-            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+            user_id: int | None = await self.repo.Find_User_By_Username(message.from_user.username)
+            if user_id is None:
+                await message.answer(f'Cant find you in database, please enter /start')
+                return
 
             await self.repo.Delete_Association(user_id, message.text)
 
@@ -56,7 +59,11 @@ class AssociationDeleter:
                 raise ValueError('message is empty')
 
             if message.text == 'y':
-                user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+                user_id: int | None = await self.repo.Find_User_By_Username(message.from_user.username)
+                if user_id is None:
+                    await message.answer(f'Cant find you in database, please enter /start')
+                    return
+
                 await self.repo.Delete_All_Associations(user_id)
 
                 await message.answer('Successfully deleted all your associations')

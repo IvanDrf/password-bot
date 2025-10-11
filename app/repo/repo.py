@@ -37,17 +37,14 @@ class Repo:
 
             await db.commit()
 
-    async def Find_User_By_Username(self, username: str) -> int:
+    async def Find_User_By_Username(self, username: str) -> int | None:
         async with aiosqlite.connect(self.__db_name) as db:
             res = await db.execute_fetchall(UserFinder.Find_UserID_By_Name(), (username,))
-            if res is None or not res:
-                raise UserException(
-                    f'cant find user with that username: {username}')
 
-            for row in res:
-                return row[0]
+            if not res:
+                return None
 
-        raise UserException(f'cant find user with that username: {username}')
+            return list(res)[0][0]
 
     async def Find_Password_Associations(self, user_id: int) -> list[list[str]]:
         async with aiosqlite.connect(self.__db_name) as db:
@@ -87,10 +84,10 @@ class Repo:
 
             await db.commit()
 
-    async def Delete_All_Associations(self, user_id :int) -> None:
+    async def Delete_All_Associations(self, user_id: int) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
-            cursor : aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_All_Associations(), (user_id,))
+            cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_All_Associations(), (user_id,))
             if cursor.rowcount <= 0:
                 raise UserException(f'you dont have any associations')
-            
+
             await db.commit()

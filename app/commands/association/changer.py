@@ -27,7 +27,10 @@ class AssociationChanger:
             if message.text is None:
                 raise ValueError('message is empty')
 
-            user_id: int = await self.repo.Find_User_By_Username(message.from_user.username)
+            user_id: int | None = await self.repo.Find_User_By_Username(message.from_user.username)
+            if user_id is None:
+                await message.answer(f'Cant find you in database, please enter /start')
+                return
 
             association, password = MessageParser.ParseMessage(message.text)
             encrypted_password: str = self.encrypter.encrypt(

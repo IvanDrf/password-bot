@@ -67,3 +67,7 @@ class Registrator:
 
     def __Register_Messages(self) -> None:
         self.handler.dp.message.register(self.handler.Message_Handler, F.text)
+        self.handler.dp.message.register(
+            self.handler.Message_Handler, F.sticker)
+        self.handler.dp.message.register(self.handler.Message_Handler, F.voice)
+        self.handler.dp.message.register(self.handler.Message_Handler, F.photo)
