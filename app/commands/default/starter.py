@@ -4,7 +4,6 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from typing import Final
 
 from app.repo.repo import Repo
-from app.errors.errors import UserException
 
 
 class Starter:

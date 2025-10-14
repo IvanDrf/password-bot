@@ -70,8 +70,9 @@ Bot is written using a ***clean architecture***
 
 ## Structure
 <details> <summary>Tree of Dirs/Files</summary>
-  
-```
+
+```  
+
 ├── app
 │   ├── app.py
 │   ├── commands
@@ -115,7 +116,23 @@ Bot is written using a ***clean architecture***
 │   │   │   ├── __init__.py
 │   │   │   └── password.py
 │   │   └── registrator
+│   │       ├── association
+│   │       │   ├── adder.py
+│   │       │   ├── association.py
+│   │       │   ├── changer.py
+│   │       │   ├── deleter.py
+│   │       │   ├── __init__.py
+│   │       │   └── printer.py
+│   │       ├── default
+│   │       │   ├── default.py
+│   │       │   └── __init__.py
 │   │       ├── __init__.py
+│   │       ├── message
+│   │       │   ├── __init__.py
+│   │       │   └── message.py
+│   │       ├── password
+│   │       │   ├── __init__.py
+│   │       │   └── password.py
 │   │       └── registrator.py
 │   ├── __init__.py
 │   ├── message
@@ -148,6 +165,7 @@ Bot is written using a ***clean architecture***
 ├── config
 │   ├── config.py
 │   └── __init__.py
+├── Dockerfile
 ├── LICENSE
 ├── logger
 │   ├── __init__.py
@@ -171,6 +189,10 @@ Bot is written using a ***clean architecture***
 │   │   ├── __init__.py
 │   │   └── test_generator.py
 │   ├── __init__.py
+│   ├── parser
+│   │   ├── fixture.py
+│   │   ├── __init__.py
+│   │   └── test_parser.py
 │   ├── repo
 │   │   ├── fixture.py
 │   │   ├── __init__.py
@@ -183,6 +205,7 @@ Bot is written using a ***clean architecture***
     ├── converter.py
     ├── encrypter.py
     ├── __init__.py
+    ├── parser.py
     └── respondent.py
 ```
 

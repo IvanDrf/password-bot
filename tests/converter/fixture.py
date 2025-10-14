@@ -9,13 +9,3 @@ def Correct_Numbers() -> list[str]:
 @pytest.fixture
 def Incorrect_Numbers() -> list[str]:
     return ['w', '-5', 'q', 'wd', 'printf a']
-
-
-@pytest.fixture
-def Correct_Messages() -> list[str]:
-    return ['a b', 'first second', 'hello world']
-
-
-@pytest.fixture
-def Incorrect_Messages() -> list[str]:
-    return ['a', '', 'first_second']

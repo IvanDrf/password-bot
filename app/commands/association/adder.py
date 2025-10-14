@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from app.repo.repo import Repo
 from app.state.state import AssociationStates
 from utils.encrypter import Encrypter
-from utils.converter import MessageParser
+from utils.parser import MessageParser
 
 
 class AssociationAdder:
