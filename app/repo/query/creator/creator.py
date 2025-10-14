@@ -3,7 +3,6 @@ from app.repo.tables import Tables
 
 
 class TableCreator:
-
     __user_table: Final = f'''
 CREATE TABLE IF NOT EXISTS {Tables.users}(
     user_id INTEGER PRIMARY KEY,

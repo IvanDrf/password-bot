@@ -10,18 +10,3 @@ class NumberConverter:
             raise ValueError('given not positive number')
 
         return number
-
-
-class MessageParser:
-    @staticmethod
-    def ParseMessage(src: str) -> tuple[str, str]:
-        '''parse message from 'a b' -> [a, b] '''
-        association: str = ''
-        password: str = ''
-
-        try:
-            association, password = src.split()
-        except:
-            raise ValueError('format should be name password')
-
-        return association, password

@@ -1,6 +1,3 @@
-from aiogram.types import Message
-from aiogram.fsm.context import FSMContext
-
 from app.commands.association.association import Associationer
 
 from app.commands.password.password import PasswordCreator
