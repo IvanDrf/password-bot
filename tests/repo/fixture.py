@@ -1,12 +1,10 @@
 import pytest
 import pytest_asyncio
-import aiosqlite
 from typing import Final
 
 from app.repo.repo import Repo
-from app.repo.tables import Tables
-from utils.encrypter import Encrypter
 from config.config import Config
+from migrations.migrator import Migrator
 
 db_name: Final = 'test.db'
 
@@ -38,17 +36,13 @@ def bad_association() -> str:
 
 @pytest_asyncio.fixture(scope='session')
 async def repo() -> Repo:
-    cfg: Config = Config(token='', db_name=db_name, key='', logger_level='')
+    cfg: Config = Config(token='', db_name=db_name, up_migrations_path='migrations/1_create_tables.up.sql',
+                         down_migrations_path='migrations/1_drop_tables.down.sql', key='', logger_level='')
 
-    await Drop_Tables()
     repo: Repo = await Repo.New(cfg)
 
+    migrator: Migrator = Migrator(cfg)
+    await migrator.Execute_DOWN_Migrations()
+    await migrator.Execute_UP_Migrations()
+
     return repo
-
-
-async def Drop_Tables() -> None:
-    async with aiosqlite.connect(db_name) as db:
-        await db.execute(f'DROP TABLE IF EXISTS {Tables.passwords}')
-        await db.execute(f'DROP TABLE IF EXISTS {Tables.users}')
-
-        await db.commit()

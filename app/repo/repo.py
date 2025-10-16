@@ -2,7 +2,6 @@ from typing import Final
 import aiosqlite
 
 from config.config import Config
-from app.repo.query.creator.creator import TableCreator
 from app.repo.query.user.user import UserAdder, UserFinder
 from app.repo.query.password.password import PasswordAssociater
 from app.repo.query.common.common import Associator
@@ -20,16 +19,8 @@ class Repo:
             raise ValueError('database name is empty in config')
 
         repo: Repo = cls(cfg.db_name)
-        await repo.__Create_DB()
 
         return repo
-
-    async def __Create_DB(self) -> None:
-        async with aiosqlite.connect(self.__db_name) as db:
-            await db.execute(TableCreator.Create_Users_Table())
-            await db.execute(TableCreator.Create_Passwords_Talbe())
-
-            await db.commit()
 
     async def Add_User(self, username: str) -> None:
         async with aiosqlite.connect(self.__db_name) as db:
