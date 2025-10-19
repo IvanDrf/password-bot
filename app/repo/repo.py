@@ -1,5 +1,6 @@
 from typing import Final
 import aiosqlite
+import logging
 
 from config.config import Config
 from app.repo.query.user.user import UserAdder, UserFinder
@@ -23,62 +24,93 @@ class Repo:
         return repo
 
     async def Add_User(self, username: str) -> None:
+        logging.info(f'repo: add user {username}')
+
         async with aiosqlite.connect(self.__db_name) as db:
             await db.execute(UserAdder.Add_User(), (username,))
 
+            logging.info(f'repo: add user success {username}')
             await db.commit()
 
     async def Find_User_By_Username(self, username: str) -> int | None:
+        logging.info(f'repo: find user {username}')
+
         async with aiosqlite.connect(self.__db_name) as db:
             res = await db.execute_fetchall(UserFinder.Find_UserID_By_Name(), (username,))
 
             if not res:
+                logging.info(f'repo: find user fail {username}')
                 return None
 
+            logging.info(f'repo: find user success {username}')
             return list(res)[0][0]
 
     async def Find_Password_Associations(self, user_id: int) -> list[list[str]]:
+        logging.info('repo: find associations')
+
         async with aiosqlite.connect(self.__db_name) as db:
             res = await db.execute_fetchall(Associator.Find_User_Passwords(), (user_id,))
             if res is None or not res:
+                logging.info(f'repo: find associations fail')
                 raise UserException('cant find associations for this user')
 
             passwords: list[list[str]] = []
             for row in res:
                 passwords.append([row[0], row[1]])
 
+            logging.info('repo: find associations success')
             return passwords
 
     async def Associate_Password(self, user_id: int, password: str, association: str) -> None:
+        logging.info(f'repo: associate password with {association}')
+
         async with aiosqlite.connect(self.__db_name) as db:
             await db.execute(PasswordAssociater.Associate_Password(),
                              (password, association, user_id))
+
+            logging.info(f'repo: associate password success {association}')
             await db.commit()
 
     async def Change_Association_Password(self, user_id: int, password: str, association: str) -> None:
+        logging.info(f'repo: change association {association}')
+
         async with aiosqlite.connect(self.__db_name) as db:
             cursor:  aiosqlite.Cursor = await db.execute(PasswordAssociater.Change_Association_Password(), (password, association, user_id))
 
             if cursor.rowcount <= 0:
+                logging.info('repo: change association fail')
                 raise UserException(
                     f'cant find association with {association}')
 
+            logging.info(f'repo: change association success {association}')
             await db.commit()
 
     async def Delete_Association(self, user_id: int, association: str) -> None:
+        logging.info(f'repo: delete association {association} for {user_id}')
+
         async with aiosqlite.connect(self.__db_name) as db:
             cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_Association(), (user_id, association))
             if cursor.rowcount <= 0:
+                logging.info(
+                    f'repo: delete association {association} for {user_id} fail')
                 raise UserException(
                     f'cant delete association {association}'
                 )
 
+            logging.info(
+                f'repo: delete association {association} for {user_id} success')
             await db.commit()
 
     async def Delete_All_Associations(self, user_id: int) -> None:
+        logging.info(f'repo: delete all associations for {user_id}')
+
         async with aiosqlite.connect(self.__db_name) as db:
             cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Delete_All_Associations(), (user_id,))
             if cursor.rowcount <= 0:
+                logging.info(
+                    f'repo: delete all associations for {user_id} fail')
                 raise UserException(f'you dont have any associations')
 
+            logging.info(
+                f'repo: delete all associations for {user_id} success')
             await db.commit()
