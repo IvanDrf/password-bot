@@ -72,7 +72,6 @@ Bot is written using a ***clean architecture***
 <details> <summary>Tree of Dirs/Files</summary>
 
 ```  
-
 ├── app
 │   ├── app.py
 │   ├── commands
@@ -147,9 +146,6 @@ Bot is written using a ***clean architecture***
 │   │   │   ├── common
 │   │   │   │   ├── common.py
 │   │   │   │   └── __init__.py
-│   │   │   ├── creator
-│   │   │   │   ├── creator.py
-│   │   │   │   └── __init__.py
 │   │   │   ├── __init__.py
 │   │   │   ├── password
 │   │   │   │   ├── __init__.py
@@ -171,6 +167,11 @@ Bot is written using a ***clean architecture***
 │   ├── __init__.py
 │   └── logger.py
 ├── main.py
+├── migrations
+│   ├── 1_create_tables.up.sql
+│   ├── 1_drop_tables.down.sql
+│   ├── __init__.py
+│   └── migrator.py
 ├── passwords.db
 ├── README.md
 ├── requirements.txt
