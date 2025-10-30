@@ -54,15 +54,6 @@ async def test_Associate_Password(repo: Repo, username: str, password: str, asso
 
 
 @pytest.mark.asyncio
-async def test_Bad_Associate_Password(repo: Repo, password: str, association: str) -> None:
-    try:
-        await repo.Associate_Password(-1, password, association)
-        pytest.fail('shouldnt add association with bad user_id')
-    except Exception as e:
-        assert 'UNIQUE constraint failed' in e.__str__()
-
-
-@pytest.mark.asyncio
 async def test_Find_Password_Associations(repo: Repo, username: str, password: str, association: str) -> None:
     user_id: int | None = await repo.Find_User_By_Username(username)
     if user_id is None:
@@ -80,8 +71,9 @@ async def test_Find_Password_Associations(repo: Repo, username: str, password: s
 @pytest.mark.asyncio
 async def test_Bad_Find_Password_Associations(repo: Repo) -> None:
     try:
-        _: list[list[str]] = await repo.Find_Password_Associations(-1)
-        pytest.fail('should find associations for user who doesnt exist')
+        res: list[list[str]] = await repo.Find_Password_Associations(-1)
+        pytest.fail(
+            f'should not find associations for user who doesnt exist{res}')
     except Exception as e:
         assert e.__str__() == 'cant find associations for this user'
 

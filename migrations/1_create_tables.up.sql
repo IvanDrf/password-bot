@@ -11,8 +11,8 @@ COMMIT;
 CREATE TABLE IF NOT EXISTS passwords(
     password TEXT NOT NULL,
     association TEXT NOT NULL,
-    user_id INTEGER,
+    user_id INTEGER NOT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT user_association UNIQUE(user_id, association)
 );

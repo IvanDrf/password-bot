@@ -65,8 +65,11 @@ class Repo:
         logging.info(f'repo: associate password with {association}')
 
         async with aiosqlite.connect(self.__db_name) as db:
-            await db.execute(PasswordAssociater.Associate_Password(),
-                             (password, association, user_id))
+            cursor: aiosqlite.Cursor = await db.execute(PasswordAssociater.Associate_Password(),
+                                                        (password, association, user_id))
+
+            if cursor.rowcount <= 0:
+                raise UserException(f'cant associate password')
 
             logging.info(f'repo: associate password success {association}')
             await db.commit()
