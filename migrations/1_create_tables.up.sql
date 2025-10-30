@@ -10,8 +10,9 @@ COMMIT;
 
 CREATE TABLE IF NOT EXISTS passwords(
     password TEXT NOT NULL,
-    association TEXT NOT NULL UNIQUE,
+    association TEXT NOT NULL,
     user_id INTEGER,
 
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT user_association UNIQUE(user_id, association)
 );
